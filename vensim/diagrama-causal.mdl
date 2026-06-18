@@ -1,32 +1,57 @@
 {UTF-8}
-Descarte de Basura  = A FUNCTION OF( Productos Mermados) ~~|
-Descarte de Basura=Productos Mermados * Tasa de descarte de mermados
-	~	Cajas/Day
-	~	Se descarta una fraccion de los mermados cada dia
+Stock en Gondola  = A FUNCTION OF( Generacion de mermados,Translado a gondola,Ventas)\
+		 ~~|
+Stock en Gondola= INTEG (Translado a gondola - Generacion de mermados - Ventas,
+		150)
+	~	Cajas
+	~	Stock disponible para venta en gondola
 	|
 
-Generacion de mermados  = A FUNCTION OF( Stock en Gondola) ~~|
+Demanda diaria  = A FUNCTION OF( )
+	~	
+	~		|
+
+Descarg de Camion  = A FUNCTION OF( "Capacidad Max. trastienda",Inventario en Trastienda\
+		,Frecuencia de llegada de camiones)
+	~	
+	~		|
+
+Descarte de Basura  = A FUNCTION OF( Productos Mermados)
+	~	
+	~		|
+
+Inventario en Trastienda  = A FUNCTION OF( Descarg de Camion,Translado a gondola) ~~|
+Inventario en Trastienda= INTEG (Descarga del camion - Translado a gondola,
+		400)
+	~	Cajas
+	~	Stock almacenado en trastienda
+	|
+
+Ventas  = A FUNCTION OF( Demanda diaria,Stock en Gondola)
+	~	
+	~		|
+
+Translado a gondola  = A FUNCTION OF( Inventario en Trastienda,Ritmo de reposición)
+	~	
+	~		|
+
+Generacion de mermados  = A FUNCTION OF( Velocidad de deterioro,Stock en Gondola) ~~|
 Generacion de mermados=Stock en Gondola * Tasa de generacion de mermas
 	~	Cajas/Day
 	~	Mermas generadas por deterioro o caducidad
 	|
 
-Ventas  = A FUNCTION OF( Stock en Gondola) ~~|
-Ventas=MIN (Tasa de Ventas Concretadas, Stock en Gondola)
-	~	Cajas/Day
-	~	Ventas limitadas por disponibilidad en gondola
-	|
+Velocidad de deterioro  = A FUNCTION OF( )
+	~	
+	~		|
+
+Productos Mermados  = A FUNCTION OF( Descarte de Basura,Generacion de mermados)
+	~	
+	~		|
 
 "Capacidad Max. trastienda"=800
 	~	Cajas [200,2000,50]
 	~	Capacidad maxima de almacenamiento en trastienda
-	|
-
-Descarga del camion=IF THEN ELSE (Inventario en Trastienda < "Capacidad Max. trastienda"\
-		, Tiempo de llegada de camion, 0
-	)
-	~	Cajas/Day
-	~	Camion descarga solo si hay espacio en trastienda
 	|
 
 Faltante Stock=MAX (0, Nivel Objetivo Gondola - Stock en Gondola)
@@ -34,27 +59,9 @@ Faltante Stock=MAX (0, Nivel Objetivo Gondola - Stock en Gondola)
 	~	Diferencia entre objetivo y stock actual en gondola
 	|
 
-Inventario en Trastienda= INTEG (Descarga del camion - Translado a gondola,
-		400)
-	~	Cajas
-	~	Stock almacenado en trastienda
-	|
-
 Nivel Objetivo Gondola=200
 	~	Cajas [50,500,10]
 	~	Nivel de stock objetivo que se desea mantener en gondola
-	|
-
-Productos Mermados= INTEG (Generacion de mermados - Descarte de Basura,
-		0)
-	~	Cajas
-	~	Acumulacion de productos mermados pendientes de descarte
-	|
-
-Stock en Gondola= INTEG (Translado a gondola - Generacion de mermados - Ventas,
-		150)
-	~	Cajas
-	~	Stock disponible para venta en gondola
 	|
 
 Faltante Trastienda=MAX (0, Nivel Objetivo Trastienda - Inventario en Trastienda)
@@ -67,7 +74,7 @@ Nivel Objetivo Trastienda=500
 	~	Stock objetivo que se desea mantener en la trastienda
 	|
 
-Tiempo de llegada de camion=Faltante Trastienda / Tiempo de retraso del proveedor
+Frecuencia de llegada de camiones=Faltante Trastienda / Tiempo de retraso del proveedor
 	~	Cajas/Day
 	~	Cajas que llegan por dia basadas en reponer el faltante
 	|
@@ -77,15 +84,10 @@ Tiempo de retraso del proveedor=2
 	~	Tiempo de demora en la entrega del proveedor
 	|
 
-Tasa de Reposición=IF THEN ELSE (Inventario en Trastienda > 0, SMOOTH (Faltante Stock\
+Ritmo de reposición=IF THEN ELSE (Inventario en Trastienda > 0, SMOOTH (Faltante Stock\
 		, 0.5), 0)
 	~	Cajas/Day
 	~	Velocidad de traslado de trastienda a gondola segun faltante
-	|
-
-Translado a gondola=MIN (Inventario en Trastienda, Tasa de Reposición)
-	~	Cajas/Day
-	~	Flujo real de trastienda a gondola limitado por stock disponible
 	|
 
 ********************************************************
@@ -119,60 +121,86 @@ TIME STEP  = 0.25
 V300  Do not put anything below this section - it will be ignored
 *View 1
 $-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,90,2
-10,1,Inventario en Trastienda,832,276,54,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,2,Stock en Gondola,1296,275,64,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,3,48,564,277,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,4,6,3,100,0,0,22,0,192,0,-1--1--1,,1|(618,277)|
-1,5,6,1,4,0,0,22,0,192,0,-1--1--1,,1|(726,277)|
-11,6,0,669,277,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,7,Descarga del camion,669,311,50,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,8,48,1597,266,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,9,11,2,100,0,0,22,0,192,0,-1--1--1,,1|(1422,266)|
-1,10,11,8,4,0,0,22,0,192,0,-1--1--1,,1|(1541,266)|
-11,11,0,1490,266,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,12,Ventas,1490,300,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,13,Tasa de Reposición,943,166,69,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,14,Tiempo de llegada de camion,498,448,68,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,15,14,7,1,0,0,0,0,192,0,-1--1--1,,1|(679,371)|
-1,16,1,13,1,0,0,0,0,192,0,-1--1--1,,1|(850,201)|
-10,17,"Capacidad Max. trastienda",682,104,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,18,Faltante Stock,1117,117,53,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,19,2,18,1,0,0,0,0,192,0,-1--1--1,,1|(1229,165)|
-1,20,18,13,1,0,0,0,0,192,0,-1--1--1,,1|(1013,121)|
-1,21,23,1,100,0,0,22,0,192,0,-1--1--1,,1|(969,275)|
-1,22,23,2,4,0,0,22,0,192,0,-1--1--1,,1|(1148,275)|
-11,23,0,1059,275,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,24,Translado a gondola,1059,309,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,25,13,24,1,0,0,0,0,192,0,-1--1--1,,1|(1053,202)|
-1,26,17,7,1,0,0,0,0,192,0,-1--1--1,,1|(598,208)|
-1,27,1,7,1,0,0,0,0,192,0,-1--1--1,,1|(767,369)|
-10,28,Productos Mermados,1302,573,46,26,3,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,29,31,2,100,0,0,22,0,192,0,-1--1--1,,1|(1294,377)|
-1,30,31,28,4,0,0,22,0,192,0,-1--1--1,,1|(1294,506)|
-11,31,0,1294,459,8,6,33,3,0,0,4,0,0,0,0,0,0,0,0,0
-10,32,Generacion de mermados,1357,459,55,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-12,33,48,1536,571,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,34,36,28,100,0,0,22,0,192,0,-1--1--1,,1|(1388,571)|
-1,35,36,33,4,0,0,22,0,192,0,-1--1--1,,1|(1483,571)|
-11,36,0,1434,571,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
-10,37,Descarte de Basura,1434,605,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,38,2,32,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-1,39,28,37,1,0,0,0,0,192,0,-1--1--1,,1|(1356,649)|
-1,40,1,24,1,0,0,0,0,192,0,-1--1--1,,1|(938,354)|
-1,41,2,12,1,0,0,0,0,192,0,-1--1--1,,1|(1401,339)|
-10,42,Nivel Objetivo Gondola,1114,20,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,43,42,18,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
-10,44,Faltante Trastienda,601,604,35,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,45,44,14,1,0,0,0,0,64,0,-1--1--1,,1|(570,585)|
-10,46,Tiempo de retraso del proveedor,409,598,58,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,47,46,14,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,48,1,44,1,0,0,0,0,0,0,-1--1--1,,1|(797,483)|
-10,49,Nivel Objetivo Trastienda,615,737,42,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,50,49,44,0,0,0,0,0,0,0,-1--1--1,,1|(0,0)|
+10,1,Inventario en Trastienda,-55,430,54,26,8,3,0,0,-1,1,0,0,0,0,0,0,0,0
+10,2,Stock en Gondola,408,413,64,26,8,3,0,0,-1,1,0,0,0,0,0,0,0,0
+11,3,0,-402,378,45,12,6,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,4,Ritmo de reposición,-3,271,69,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,5,Frecuencia de llegada de camiones,-390,586,75,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,6,1,4,1,0,0,0,0,192,0,-1--1--1,,1|(-73,358)|
+10,7,"Capacidad Max. trastienda",-206,242,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,8,Faltante Stock,307,259,53,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,9,2,8,1,0,0,0,0,192,0,-1--1--1,,1|(382,316)|
+1,10,8,4,1,0,0,0,0,192,0,-1--1--1,,1|(132,220)|
+10,11,Generacion de mermados,482,638,55,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,12,2,11,1,0,0,0,0,192,0,-1--1--1,,1|(381,558)|
+10,13,Nivel Objetivo Gondola,191,119,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,14,13,8,1,0,0,0,0,192,0,-1--1--1,,1|(332,125)|
+10,15,Faltante Trastienda,-287,742,35,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,16,15,5,1,0,0,0,0,64,0,-1--1--1,,1|(-386,673)|
+10,17,Tiempo de retraso del proveedor,-479,736,58,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,18,17,5,1,0,0,0,0,64,0,-1--1--1,,1|(-501,654)|
+1,19,1,15,1,0,0,0,0,0,0,-1--1--1,,1|(-99,627)|
+10,20,Nivel Objetivo Trastienda,-273,875,42,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,21,20,15,1,0,0,0,0,0,0,-1--1--1,,1|(-305,814)|
+12,22,2,-305,814,17,16,8,3,0,0,-1,0,0,0,0,0,8388608,21,0,0
+12,23,1,-99,627,17,24,8,3,0,0,-1,0,0,0,0,0,8388608,19,0,0
+10,24,Descarg de Camion,-308,408,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,25,5,24,1,0,0,0,0,192,0,-1--1--1,,1|(-303,507)|
+1,26,1,24,1,0,0,0,0,192,0,-1--1--1,,1|(-160,499)|
+1,27,24,1,1,0,0,0,0,192,0,-1--1--1,,1|(-186,332)|
+1,28,7,24,1,0,0,0,0,192,0,-1--1--1,,1|(-337,291)|
+10,29,Translado a gondola,164,406,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,30,4,29,1,0,0,0,0,192,0,-1--1--1,,1|(149,293)|
+1,31,29,2,1,0,0,0,0,192,0,-1--1--1,,1|(256,486)|
+1,32,1,29,1,0,0,0,0,192,0,-1--1--1,,1|(76,494)|
+10,33,Ventas,723,414,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,34,2,33,1,0,0,0,0,192,0,-1--1--1,,1|(580,470)|
+10,35,Productos Mermados,193,728,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,36,Descarte de Basura,304,876,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,37,35,36,1,0,0,0,0,192,0,-1--1--1,,1|(198,830)|
+12,38,2,-386,673,14,13,8,3,0,0,-1,1,0,0,0,0,8388864,16,0,0
+12,39,1,-501,654,16,12,8,3,0,0,-1,0,0,0,0,0,8388864,18,0,0
+12,40,2,-337,291,16,16,8,3,0,0,-1,0,0,0,0,0,8388608,28,0,0
+12,41,2,-303,507,13,13,8,3,0,0,-1,0,0,0,0,0,8388608,25,0,0
+12,42,1,-160,499,17,22,8,3,0,0,-1,0,0,0,0,0,8388608,26,0,0
+12,43,2,-186,332,15,16,8,3,0,0,-1,0,0,0,0,0,8388608,27,0,0
+12,44,2,332,125,14,15,8,3,0,0,-1,0,0,0,0,0,8388608,14,0,0
+12,45,1,382,316,17,24,8,3,0,0,-1,0,0,0,0,0,8388608,9,0,0
+12,46,2,132,220,15,15,8,3,0,0,-1,0,0,0,0,0,8388608,10,0,0
+12,47,2,149,293,16,15,8,3,0,0,-1,0,0,0,0,0,8388608,30,0,0
+12,48,2,76,494,15,15,8,3,0,0,-1,0,0,0,0,0,8388608,32,0,0
+12,49,2,256,486,15,13,8,3,0,0,-1,0,0,0,0,0,8388608,31,0,0
+12,50,2,580,470,18,17,8,3,0,0,-1,0,0,0,0,0,8388608,34,0,0
+12,51,2,381,558,15,11,8,3,0,0,-1,0,0,0,0,0,8388608,12,0,0
+1,52,11,2,1,0,0,0,0,192,0,-1--1--1,,1|(504,543)|
+12,53,1,504,543,18,21,8,3,0,0,-1,0,0,0,0,0,8388608,52,0,0
+12,54,2,198,830,16,15,8,3,0,0,-1,0,0,0,0,0,8388608,37,0,0
+1,55,36,35,1,0,0,0,0,192,0,-1--1--1,,1|(309,761)|
+12,56,1,309,761,15,19,8,3,0,0,-1,0,0,0,0,0,8388608,55,0,0
+1,57,33,2,1,0,0,0,0,192,0,-1--1--1,,1|(565,345)|
+12,58,1,565,345,15,21,8,3,0,0,-1,0,0,0,0,0,8388608,57,0,0
+1,59,11,35,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+12,60,2,339,681,13,12,8,3,0,0,-1,0,0,0,0,0,8388608,59,0,0
+12,61,1,248,798,15,15,4,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,62,1,-220,600,15,15,4,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,63,1,-178,412,15,15,4,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,64,1,280,356,15,15,4,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,65,2,-73,358,17,14,8,3,0,0,-1,0,0,0,0,0,8388608,6,0,0
+10,66,Demanda diaria,677,243,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,67,66,33,1,0,0,0,0,192,0,-1--1--1,,1|(763,314)|
+10,68,Velocidad de deterioro,704,562,55,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,69,68,11,1,0,0,0,0,192,0,-1--1--1,,1|(632,676)|
+12,70,2,763,314,14,15,8,3,0,0,-1,0,0,0,0,0,8388608,67,0,0
+12,71,2,632,676,16,17,8,3,0,0,-1,0,0,0,0,0,8388608,69,0,0
+1,72,29,1,1,0,0,0,0,192,0,-1--1--1,,1|(45,346)|
+12,73,1,45,346,15,25,8,3,0,0,-1,0,0,0,0,0,8388608,72,0,0
+12,74,1,53,418,15,15,4,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,75,1,437,525,15,15,4,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,76,1,569,416,15,15,4,3,0,0,-1,0,0,0,0,0,0,0,0,0
 ///---\\\
 :L<%^E!@
 4:Time
-5:Ventas
+5:Demanda diaria
 9:current
 19:90,0
 24:0
