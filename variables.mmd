@@ -1,0 +1,36 @@
+---
+config:
+  layout: elk
+---
+graph LR
+    %% Límite del Sistema
+    subgraph Sistema ["SISTEMA DE TIENDAS MASS (Variables Endógenas)"]
+        direction LR
+        
+        EndoList("<b>Auxiliares y Tasas</b><br><br>• Disponibilidad en Góndola<br>• Nivel de Satisfacción del Cliente<br>• Tamaño de la Orden de Compra<br>• Faltante de Stock<br>• Tasa de Despacho / Reposición<br>• Tasa de Generación de Mermas<br>• Tasa de Ventas Concretadas<br>• Número de cajas operativas")
+        
+        subgraph Estado ["VARIABLES DE ESTADO (Niveles)"]
+            EstadoList["• Pedidos Pendientes<br>• Mercadería en Transito<br>• Inventario en trastienda<br>• Productos Mermados<br>• Stock en gondola<br>• Clientes en tienda<br>• Dinero en Caja"]
+        end
+        
+        EndoList ~~~ Estado
+    end
+
+    subgraph Entorno ["ENTORNO <br>(Variables Exógenas)"]
+        ExoList("• Tasa de Afluencia Potencial de clientes<br>• Tiempo de Retraso del Proveedor<br>• Capacidad Máxima de Trastienda<br>• Tiempo de caducidad del producto<br>• Precio de Venta Fijado (hard discount)<br>• Horas operativas por día<br>• Surtido de productos<br>• Presupuesto publicitario local")
+    end
+
+    %% Nota sobre el alcance (Scoping)
+    Nota>Nota: Se excluyeron del análisis variables macroeconómicas,<br>marketing corporativo y leyes laborales para<br>acotar el modelo estrictamente a la gestión<br>de inventario en tienda.]
+
+    Sistema ~~~ Entorno
+    Entorno ~~~ Nota
+
+    %% Estilos
+    style Sistema fill:#ffc078,stroke:#d97706,stroke-width:2px,color:#000,rx:30,ry:30
+    style Estado fill:#f8f9fa,stroke:#343a40,stroke-width:2px,color:#000,rx:20,ry:20
+    style Entorno fill:#ffffff,stroke:#6c757d,stroke-width:2px,stroke-dasharray: 5 5,color:#000,rx:30,ry:30
+    style Nota fill:#fff3cd,stroke:#ffeeba,color:#856404,rx:10,ry:10
+    style EndoList fill:none,stroke:none,color:#000,text-align:left
+    style EstadoList fill:none,stroke:none,color:#000,text-align:left
+    style ExoList fill:none,stroke:none,color:#000,text-align:left
