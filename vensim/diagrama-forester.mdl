@@ -85,9 +85,9 @@ Tasa de Reposición=IF THEN ELSE (Inventario en Trastienda > 0, SMOOTH (Faltante
 	~	Velocidad de traslado de trastienda a gondola segun faltante
 	|
 
-Tasa de Ventas Concretadas=RANDOM NORMAL(5, 30, 15, 5, 0)
+Tasa de Ventas Concretadas=15
 	~	Cajas/Day
-	~	Ventas diarias con variabilidad aleatoria
+	~	Ventas diarias constantes (valor promedio)
 	|
 
 Translado a gondola=MIN (Inventario en Trastienda, Tasa de Reposición)
