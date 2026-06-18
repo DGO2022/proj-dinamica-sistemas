@@ -1,6 +1,6 @@
 {UTF-8}
-"Capacidad Max. trastienda"=200
-	~	Cajas [50,1000,50]
+"Capacidad Max. trastienda"=800
+	~	Cajas [200,2000,50]
 	~	Capacidad maxima de almacenamiento en trastienda
 	|
 
@@ -85,9 +85,9 @@ Tasa de Reposición=IF THEN ELSE (Inventario en Trastienda > 0, SMOOTH (Faltante
 	~	Velocidad de traslado de trastienda a gondola segun faltante
 	|
 
-Tasa de Ventas Concretadas=RANDOM NORMAL(5, 30, 15, 5, 0)
+Tasa de Ventas Concretadas=15
 	~	Cajas/Day
-	~	Ventas diarias con variabilidad aleatoria
+	~	Ventas diarias con valor constante
 	|
 
 Translado a gondola=MIN (Inventario en Trastienda, Tasa de Reposición)
@@ -189,9 +189,8 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,90,2
 1,56,55,50,0,0,0,0,0,0,0,-1--1--1,,1|(0,0)|
 ///---\\\
 :L<%^E!@
-1:current.vdfx
 4:Time
-5:Nivel Objetivo Trastienda
+5:Ventas
 9:current
 19:90,0
 24:0
