@@ -74,9 +74,14 @@ Nivel Objetivo Trastienda=500
 	~	Stock objetivo que se desea mantener en la trastienda
 	|
 
-Frecuencia de llegada de camiones=Faltante Trastienda / Tiempo de retraso del proveedor
+Pedidos al proveedor=Faltante Trastienda / Tiempo de retraso del proveedor
 	~	Cajas/Day
-	~	Cajas que llegan por dia basadas en reponer el faltante
+	~	Tasa de pedido al proveedor basada en el faltante de trastienda
+	|
+
+Frecuencia de llegada de camiones=DELAY3 (Pedidos al proveedor, Tiempo de retraso del proveedor)
+	~	Cajas/Day
+	~	Cajas que llegan con retraso de transito del proveedor
 	|
 
 Tiempo de retraso del proveedor=2
