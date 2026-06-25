@@ -74,14 +74,9 @@ Nivel Objetivo Trastienda=500
 	~	Stock objetivo que se desea mantener en la trastienda
 	|
 
-Pedidos al proveedor=Faltante Trastienda / Tiempo de retraso del proveedor
+Frecuencia de llegada de camiones=Faltante Trastienda / Tiempo de retraso del proveedor
 	~	Cajas/Day
-	~	Tasa de pedido al proveedor basada en el faltante de trastienda
-	|
-
-Frecuencia de llegada de camiones=DELAY3 (Pedidos al proveedor, Tiempo de retraso del proveedor)
-	~	Cajas/Day
-	~	Cajas que llegan con retraso de transito del proveedor
+	~	Cajas que llegan por dia basadas en reponer el faltante
 	|
 
 Tiempo de retraso del proveedor=2
@@ -141,11 +136,9 @@ $-1--1--1,0,|12||-1--1--1|-1--1--1|-1--1--1|-1--1--1|-1--1--1|96,96,90,2
 10,13,Nivel Objetivo Gondola,894,59,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,14,13,8,1,0,0,0,0,192,0,-1--1--1,,1|(1054,10)|
 10,15,Faltante Trastienda,483,652,35,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,16,15,77,1,0,0,0,0,64,0,-1--1--1,,1|(420,636)|
+1,16,15,5,1,0,0,0,0,64,0,-1--1--1,,1|(384,583)|
 10,17,Tiempo de retraso del proveedor,215,608,58,17,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,18,17,77,1,0,0,0,0,64,0,-1--1--1,,1|(245,614)|
-10,77,Pedidos al proveedor,350,620,60,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
-1,78,77,5,1,0,0,0,0,64,0,-1--1--1,,1|(362,556)|
+1,18,17,5,1,0,0,0,0,64,0,-1--1--1,,1|(230,513)|
 1,19,1,15,1,0,0,0,0,0,0,-1--1--1,,1|(671,537)|
 10,20,Nivel Objetivo Trastienda,497,785,42,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
 1,21,20,15,1,0,0,0,0,0,0,-1--1--1,,1|(465,724)|
