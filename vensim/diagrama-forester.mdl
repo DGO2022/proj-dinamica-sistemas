@@ -69,9 +69,14 @@ Nivel Objetivo Trastienda=500
 	~	Stock objetivo que se desea mantener en la trastienda
 	|
 
-Tasa de llegada de camion=Faltante Trastienda / Tiempo de retraso del proveedor
+Pedidos al proveedor=Faltante Trastienda / Tiempo de retraso del proveedor
 	~	Cajas/Day
-	~	Cajas que llegan por dia basadas en reponer el faltante
+	~	Tasa de pedido al proveedor basada en el faltante de trastienda
+	|
+
+Tasa de llegada de camion=DELAY3 (Pedidos al proveedor, Tiempo de retraso del proveedor)
+	~	Cajas/Day
+	~	Cajas que llegan con retraso de transito del proveedor
 	|
 
 Tiempo de retraso del proveedor=2
@@ -84,10 +89,10 @@ Tiempo de ajuste de reposicion=1
 	~	Tiempo de ajuste para convertir faltante en tasa de reposicion
 	|
 
-Tasa de Reposición=IF THEN ELSE (Inventario en Trastienda > 0, SMOOTH (Faltante Stock\
-		, 0.5) / Tiempo de ajuste de reposicion, 0)
+Tasa de Reposición=IF THEN ELSE (Inventario en Trastienda > 0, DELAY1 (Faltante Stock\
+		/ Tiempo de ajuste de reposicion, Tiempo de ajuste de reposicion), 0)
 	~	Cajas/Day
-	~	Velocidad de traslado de trastienda a gondola segun faltante
+	~	Velocidad de traslado de trastienda a gondola con retraso de reposicion
 	|
 
 Tasa de Ventas Concretadas=15
